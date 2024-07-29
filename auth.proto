@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package igoretf.auth;
+
+option go_package = "/;igoretf_auth";
+
+// Auth сервер авторизации.
+service Auth {
+  // Login авторизация.
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+}
+
+// LoginRequest структура данных для авторизации пользователя.
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// LoginRequest структура ответа авторизованного пользователя.
+message LoginResponse {
+  int32 user_id = 1;
+  string session_id = 2;
+}

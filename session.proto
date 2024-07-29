@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package igoretf.auth;
+
+option go_package = "/;igoretf_auth";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+// Session сервер сессий пользователей.
+service Session {
+  // Save сохранить сессию.
+  rpc Save(SaveRequest) returns (SessionId) {}
+  // Get получить сессию.
+  rpc Get(SessionId) returns (GetResponse) {}
+  // Delete удалить сессию.
+  rpc Delete(SessionId) returns (google.protobuf.Empty) {}
+  // DeleteKey удалить значение по ключу из сессии.
+  rpc DeleteKey(DeleteKeyRequest) returns (google.protobuf.Empty) {}
+  // GetIdentity получить user_id по идентификатору сессии или значению identity.
+  rpc GetIdentity(GetIdentityRequest) returns (GetIdentityResponse) {}
+}
+
+// SessionElement структура, элемента сессии.
+message SessionElement {
+  string key = 1;
+  google.protobuf.Any value = 2;
+}
+
+// SessionElementInt - proto Message, Integer значение SessionElement value.
+message SessionElementInt {
+  int64 value = 1;
+}
+
+// SessionElementFloat - proto Message, Float значение SessionElement value.
+message SessionElementFloat {
+  double value = 1;
+}
+
+// SessionElementBool - proto Message, булево значение SessionElement value.
+message SessionElementBool {
+  bool value = 1;
+}
+
+// SessionElementString - proto Message, String значение SessionElement value.
+message SessionElementString {
+  string value = 1;
+}
+
+// SessionElementArray - proto Message, гетерогенный массив как значение SessionElement value.
+message SessionElementArray {
+  repeated google.protobuf.Any value = 1;
+}
+
+// SessionElementObject - proto Message, объектное значение SessionElement value.
+message SessionElementObject {
+  map<string, google.protobuf.Any> value = 1;
+}
+
+// SaveRequest структура запроса на сохранения сессий.
+message SaveRequest {
+  // Id идентификатор сессии, может быть не обязательным, если он отсутствует, будет сгенерирован новый.
+  string id = 1;
+  // Data данные сессии, представлен в виде ключа и любого типа данных.
+  repeated SessionElement data = 2;
+  // Rewrite переписать сессию полностью или дополнить.
+  // Если значение true, ключи которые есть в сессии но не переданы, будут удалены.
+  bool rewrite = 3;
+}
+
+// SessionId структура содержащая идентификатор сессии.
+message SessionId {
+  string id = 1;
+}
+
+// DeleteKeyRequest структура запроса удаления значения по ключу из сессии.
+message DeleteKeyRequest {
+  string session_id = 1;
+  string key = 2;
+}
+
+// GetResponse структура ответа получения сессии пользователя.
+message GetResponse {
+  string id = 1;
+  repeated SessionElement data = 2;
+}
+
+// GetIdentityRequest структура запроса получения идентификатора пользователя из сессии
+// или извлечения из строки identity.
+message GetIdentityRequest {
+  string session_id = 1;
+  string identity = 2;
+}
+
+// GetIdentityResponse структура ответа получения идентификатора пользователя из сессии или строки identity.й
+message GetIdentityResponse {
+  uint64 user_id = 1;
+  string session_id = 2;
+}
